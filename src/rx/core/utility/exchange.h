@@ -7,7 +7,7 @@ namespace Rx::Utility {
 
 template<typename T, typename U = T>
 T exchange(T& object_, U&& _new_value) {
-  T old_value = move(object_);
+  T old_value = Utility::move(object_);
   object_ = forward<U>(_new_value);
   return old_value;
 }
