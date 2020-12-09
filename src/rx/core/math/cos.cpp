@@ -103,12 +103,12 @@ Float32 cos(Float32 _x) {
   RX_HINT_UNREACHABLE();
 }
 
-static constexpr const Float32 k_pi_2_hi{1.5707962513e+00}; // 0x3fc90fda
-static constexpr const Float32 k_pi_2_lo{7.5497894159e-08}; // 0x33a22168
-static constexpr const Float32 k_p_s0{1.6666586697e-01};
-static constexpr const Float32 k_p_s1{-4.2743422091e-02};
-static constexpr const Float32 k_p_s2{-8.6563630030e-03};
-static constexpr const Float32 k_q_s1{-7.0662963390e-01};
+static constexpr const Float32 k_pi_2_hi{1.5707962513e+00f}; // 0x3fc90fda
+static constexpr const Float32 k_pi_2_lo{7.5497894159e-08f}; // 0x33a22168
+static constexpr const Float32 k_p_s0{1.6666586697e-01f};
+static constexpr const Float32 k_p_s1{-4.2743422091e-02f};
+static constexpr const Float32 k_p_s2{-8.6563630030e-03f};
+static constexpr const Float32 k_q_s1{-7.0662963390e-01f};
 
 static Float32 R(Float32 _z) {
   const Float32Eval p{_z * (k_p_s0 + _z * (k_p_s1 + _z * k_p_s2))};

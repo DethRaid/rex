@@ -202,7 +202,7 @@ bool Logger::enqueue(Log* _owner, Log::Level _level, String&& message_) {
     this_queue.messages.push_back(&m_messages.last()->link);
 
     // Wakeup logging thread when we have a few messages.
-    if (m_streams.size() && m_messages.size() >= 0) {
+    if (!m_streams.is_empty() && !m_messages.is_empty()) {
       m_wakeup_cond.signal();
     }
 
