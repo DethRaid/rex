@@ -32,7 +32,6 @@ struct RX_API Directory {
     bool is_file() const;
     bool is_directory() const;
     const String& name() const;
-    String&& name();
 
     const Directory& directory() const &;
 
@@ -120,10 +119,6 @@ RX_HINT_FORCE_INLINE const Directory& Directory::Item::directory() const & {
 
 RX_HINT_FORCE_INLINE const String& Directory::Item::name() const {
   return m_name;
-}
-
-RX_HINT_FORCE_INLINE String&& Directory::Item::name() {
-  return Utility::move(m_name);
 }
 
 RX_HINT_FORCE_INLINE Directory::Item::Item(const Directory* _directory, String&& name_, Type _type)
