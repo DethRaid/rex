@@ -46,7 +46,7 @@ inline Float32 MT19937::f32() {
 }
 
 inline Float64 MT19937::f64() {
-  return static_cast<Float64>(u32()) / static_cast<Float32>(k_max);
+  return static_cast<Float64>(u32()) / static_cast<Float64>(k_max);
 }
 
 }
