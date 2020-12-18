@@ -71,16 +71,30 @@ static GlobalGroup g_group_loggers{"loggers"};
 
 Global<Logger> Logger::s_instance{"system", "logger"};
 
-static inline const char* string_for_level(Log::Level _level) {
-  switch (_level) {
-  case Log::Level::k_warning:
-    return "warning";
-  case Log::Level::k_info:
-    return "info";
-  case Log::Level::k_verbose:
-    return "verbose";
-  case Log::Level::k_error:
-    return "error";
+static inline const char* string_for_level(Log::Level _level, const bool color = true) {
+  if (color) {
+    switch (_level) {
+    case Log::Level::k_warning:
+      return "\033[93mwarning\033[0m";
+    case Log::Level::k_info:
+      return "info";
+    case Log::Level::k_verbose:
+      return "\033[97mverbose\033[0m";
+    case Log::Level::k_error:
+      return "\033[91merror\033[0m";
+    }
+	  
+  } else {
+    switch (_level) {
+    case Log::Level::k_warning:
+      return "warning";
+    case Log::Level::k_info:
+      return "info";
+    case Log::Level::k_verbose:
+      return "verbose";
+    case Log::Level::k_error:
+      return "error";
+    }
   }
   return nullptr;
 }
@@ -98,6 +112,32 @@ static inline String string_for_time(time_t _time) {
   return date;
 }
 
+// Calculates the length of the string, ignoring ANSI color codes
+Size ansi_color_strlen(const char* str) {
+  Size size{0};
+
+  bool in_ansi_color{false};
+
+  const auto* src = str;
+  while (*src != '\0') {
+    if (!in_ansi_color  && *src == '\033') {
+        in_ansi_color = true;
+    }
+
+  	if (!in_ansi_color) {
+          size++;
+  	}
+
+  	if (in_ansi_color && *src == 'm') {
+          in_ansi_color = false;
+  	}
+
+  	src++;
+  }
+
+  return size;
+}	
+
 Logger::Logger()
   : m_status{k_running}
   , m_padding{0}
@@ -105,10 +145,10 @@ Logger::Logger()
 {
   // Calculate padding needed for formatting log level.
   int max_level = Algorithm::max(
-    strlen(string_for_level(Log::Level::k_warning)),
-    strlen(string_for_level(Log::Level::k_info)),
-    strlen(string_for_level(Log::Level::k_verbose)),
-    strlen(string_for_level(Log::Level::k_error)));
+    strlen(string_for_level(Log::Level::k_warning, false)),
+    strlen(string_for_level(Log::Level::k_info, false)),
+    strlen(string_for_level(Log::Level::k_verbose, false)),
+    strlen(string_for_level(Log::Level::k_error, false)));
 
   int max_name = 0;
   g_group_loggers.each([&](GlobalNode* _node) {
@@ -120,7 +160,7 @@ Logger::Logger()
     m_queues.emplace_back(this_log, IntrusiveList{});
 
     // Keep track of the largest logger name.
-    const auto length = strlen(this_log->name());
+    const auto length = ansi_color_strlen(this_log->name());
     max_name = Algorithm::max(max_name, static_cast<int>(length));
   });
 
@@ -244,7 +284,7 @@ void Logger::write(Ptr<Message>& message_) {
 
   const auto name = this_queue->owner->name();
   const auto level = string_for_level(message_->level);
-  const auto padding = strlen(name) + strlen(level) + 1; // +1 for '/'
+  const auto padding = ansi_color_strlen(name) + ansi_color_strlen(level) + 1; // +1 for '/'
 
   // The streams written to are all binary streams. Handle platform differences
   // for handling for newline.
