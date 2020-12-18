@@ -10,10 +10,10 @@ struct Stream;
 
 struct RX_API Log {
   enum class Level {
+  	k_error,
     k_warning,
     k_info,
-    k_verbose,
-    k_error
+    k_verbose
   };
 
   using QueueEvent = Event<void(Level, String)>;
@@ -54,6 +54,14 @@ struct RX_API Log {
   bool verbose(const char* _format, Ts&&... _arguments);
   template<typename... Ts>
   bool error(const char* _format, Ts&&... _arguments);
+
+  // Sets the verbosity level of this logger. Any messages with a level equal
+  // to or less verbose than the given level will be passed along to the
+  // message queue, messages more verbose will not
+  //
+  // For example, if you set the level to |Level::k_info|, then messages with a
+  // level of |Level::k_verbose| will not be sent to the message queue	
+  void set_level(Level new_level);	
 
   // When a message is queued, all delegates associated by this function are
   // called. This is different from |on_write| in that |callback_| is called
@@ -98,6 +106,8 @@ private:
   const char* m_name;
   SourceLocation m_source_location;
 
+  Level level{Level::k_info};
+
   QueueEvent m_queue_event;
   WriteEvent m_write_event;
   FlushEvent m_flush_event;
@@ -111,6 +121,10 @@ inline constexpr Log::Log(const char* _name, const SourceLocation& _source_locat
 
 template<typename... Ts>
 inline bool Log::write(Level _level, const char* _format, Ts&&... _arguments) {
+  if constexpr (_level > level)  {
+    return false;  
+  }
+	
   if constexpr (sizeof...(Ts) > 0) {
     auto format = String::format(_format, Utility::forward<Ts>(_arguments)...);
     m_queue_event.signal(_level, {format.allocator(), format});

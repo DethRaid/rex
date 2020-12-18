@@ -288,6 +288,8 @@ void Logger::write(Ptr<Message>& message_) {
 
 } // anon-namespace
 
+void Log::set_level(Level new_level) { level = new_level; }
+
 void Log::signal_write(Level _level, String&& contents_) {
   // NOTE(dweiler): This is called by the logging thread.
   m_write_event.signal(_level, Utility::move(contents_));
