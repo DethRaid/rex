@@ -121,7 +121,7 @@ inline constexpr Log::Log(const char* _name, const SourceLocation& _source_locat
 
 template<typename... Ts>
 inline bool Log::write(Level _level, const char* _format, Ts&&... _arguments) {
-  if constexpr (_level > level)  {
+  if (_level > level)  {
     return false;  
   }
 	
