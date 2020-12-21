@@ -7,7 +7,7 @@
 
 namespace Rx::Math {
 
-static constexpr const Float32 k_tiny{1.0e-30};
+static constexpr const Float32 k_tiny{1.0e-30f};
 
 Float32 sqrt(Float32 _x) {
   const auto sign{static_cast<Sint32>(0x80000000)};
