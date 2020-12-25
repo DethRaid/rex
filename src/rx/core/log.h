@@ -106,7 +106,7 @@ private:
   const char* m_name;
   SourceLocation m_source_location;
 
-  Level level{Level::k_info};
+  Level level{Level::k_verbose};
 
   QueueEvent m_queue_event;
   WriteEvent m_write_event;
