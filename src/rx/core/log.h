@@ -97,7 +97,6 @@ struct RX_API Log {
 private:
   const char* m_name;
   SourceLocation m_source_location;
-  
   QueueEvent m_queue_event;
   WriteEvent m_write_event;
   FlushEvent m_flush_event;
